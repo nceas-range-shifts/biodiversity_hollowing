@@ -8,12 +8,12 @@ format:
     toc-depth: 3
     toc-location: left
     embed-resources: true
+execute:
+  message: false
+  warning: false
 ---
 
-``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
-
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.height = 4, fig.width = 7)
-
+``` {r setup}
 library(terra)
 library(data.table)
 library(tidyverse)
@@ -21,7 +21,6 @@ library(collapse)
 library(cowplot)
 library(here)
 source(here('common_fxns.R'))
-
 ```
 
 # Summary

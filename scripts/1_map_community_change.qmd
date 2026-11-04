@@ -52,8 +52,7 @@ available_spp <- list.files(here_aquax('SDM')) |>
   str_extract('[0-9]+') |> 
   as.numeric()
 aquax_meta <- get_aquax_meta() |>
-  filter(aphia_id %in% available_spp) |> 
-  cut_problem_depths()
+  filter(aphia_id %in% available_spp)
 
 spp_id_tx_df <- get_spp_vuln() |>
   ### spp vuln includes the taxa we want

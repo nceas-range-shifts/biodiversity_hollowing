@@ -184,7 +184,7 @@ For the ensemble model layers, reproject to Behrmann 5k resolution, mask, and ca
     * 6 (or -6) means total agreement.
 
 ```{r}
-isimip_f <- here('_output/impact_maps/biomass_change_ssp585_2050.tif')
+isimip_f <- here('_output/biomass_change_maps/biomass_change_ssp585_2050.tif')
 
 if(!file.exists(isimip_f)) {
   ocean_r <- get_ocean_rast()

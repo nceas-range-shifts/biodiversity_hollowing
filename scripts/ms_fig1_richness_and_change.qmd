@@ -41,8 +41,9 @@ source(here('common_fxns.R'))
 
 ```{r spp and fe richness change}
 
-nspp_r <- rast(here('_output/spp_turnover_maps/all_spp_richness.tif'))
-nfe_r  <- rast(here('_output/fe_turnover_maps/all_fe_richness.tif'))
+nspp_r     <- rast(here('_output/spp_turnover_maps/all_spp_richness.tif'))
+nfe_r      <- rast(here('_output/fe_turnover_maps/all_fe_richness.tif'))
+nspp_fe_r  <- rast(here('_output/fe_turnover_maps/fe_spp_richness.tif'))
 
 ```
 
@@ -133,7 +134,7 @@ knitr::include_graphics(fig1_f)
 ### Supplementary figs: species and functional richness
 
 ```{r spp and fe richness}
-figSI_f <- here('ms_figs/figSI_spp_fe_richness.png')
+figSI_f <- here('ms_figs/figS1_spp_fe_richness.png')
 
 if(!file.exists(figSI_f)) {
   nspp_df <- as.data.frame(nspp_r, xy = TRUE) %>%
@@ -184,25 +185,27 @@ knitr::include_graphics(figSI_f)
 ### Supplementary figs: functional redundancy
 
 ```{r functional redundancy}
-figSI_f <- here('ms_figs/figSI_functional_redundancy.png')
+figSI_f <- here('ms_figs/figS5_functional_redundancy.png')
 
 if(!file.exists(figSI_f)) {
-  nfe_adj_r <- nfe_r; nfe_adj_r[nfe_adj_r == 0] <- 1
-  fred_r <- nspp_r / nfe_adj_r
+  fred_r <- nspp_fe_r / nfe_r
   names(fred_r) <- c('current', 'rcp45_2050', 'rcp85_2050')
   dfred_r <- (fred_r[[2]] - fred_r[[1]]) / fred_r[[1]]
   names(dfred_r) <- 'd_fred'
 
   fred_df <- as.data.frame(c(fred_r, dfred_r), xy = TRUE) |> 
     select(x, y, current, d_fred) |> 
-    mutate(d_fred = ifelse(d_fred > 1, 1, d_fred))
+    mutate(d_fred = ifelse(d_fred > 1, 1, d_fred)) |>
+    filter(!is.na(current)) |>
+    filter(!is.infinite(current))
 
-  fred_max <- max(fred_df$current)
+  fred_max <- round(max(fred_df$current, na.rm = TRUE))
 
   fred_panel <- plot_map(data = fred_df, 
                          fill_var = current) +
-    scale_fill_viridis_c(breaks = c(0, 10, 20, 30, fred_max), 
-                         labels = c(0, 10, 20, 30, fred_max)) +
+    scale_fill_viridis_c(limits = c(0, fred_max),
+                         breaks = c(0, 10, 20, fred_max), 
+                         labels = c(0, 10, 20, fred_max)) +
     theme(text = element_text(family = 'Helvetica', size = 8)) +
     labs(fill = expression(N[spp] / N[FE]))
 
@@ -251,7 +254,7 @@ knitr::include_graphics(figSI_f)
 ### Diverging palette from magenta to dark green, with yellow tone
 ### in middle - based on hcl.colors(pal = 'Red-Green')
 
-figSI_f <- here('ms_figs/figSI_spp_fe_richness_change_ssp585.png')
+figSI_f <- here('ms_figs/figS2_spp_fe_richness_change_ssp585.png')
 if(!file.exists(figSI_f)) {
 
   nspp_df <- as.data.frame(nspp_r, xy = TRUE) %>%

@@ -57,7 +57,7 @@ Note, the "agreement" layer ranges from -6 to 6, representing the sum of signs o
 * +/- 2, or 0: two or more models disagreeing
 
 ```{r biomass change}
-biomass_r <- rast(here('_output/impact_maps/biomass_change_ssp585_2050.tif'))
+biomass_r <- rast(here('_output/biomass_change_maps/biomass_change_ssp585_2050.tif'))
 biomass_r[[1]][biomass_r[[1]] > .4] <- .4 ### cap at +40% - only affects 0.003 of data
 
 biomass_df <- as.data.frame(biomass_r, xy = TRUE)

@@ -55,8 +55,7 @@ available_spp <- list.files(here_aquax('SDM')) |>
   str_extract('[0-9]+') |> 
   as.numeric()
 aquax_meta <- get_aquax_meta() |>
-  filter(aphia_id %in% available_spp) |> 
-  cut_problem_depths()
+  filter(aphia_id %in% available_spp)
 
 spp_fe_df <- read_csv(here('_data/ohara_2024/funct_entity_traits/fe_spp_traits.csv')) |>
   rename(len = length_cm, wcol = wcol_pos) |>
@@ -412,6 +411,26 @@ if(!file.exists(fe_rich_out_f)) {
   writeRaster(round(nfe_r), fe_rich_out_f)
 }
 plot(rast(fe_rich_out_f), main = 'fe richness')
+
+```
+
+#### Spp Richness (FE spp only)
+
+```{r Spp-FE richness rasters}
+fe_rich_out_f <- here('_output/fe_turnover_maps/fe_spp_richness.tif')
+
+if(!file.exists(fe_rich_out_f)) {
+
+  fe_nspp_df <- arrow::read_parquet(here('_output/fe_turnover_maps/fe_nspp_maps.parquet'))
+
+  fe_nspp_r <- fe_nspp_df |>
+    cell_id_to_xy(drop = TRUE) |>
+    rast(crs = crs(base_rast), ext = ext(base_rast)) |>
+    project(behr_rast, res = 5000)
+
+  writeRaster(round(fe_nspp_r), fe_rich_out_f)
+}
+plot(rast(fe_rich_out_f), main = 'spp richness (fe spp only)')
 
 ```
 

@@ -47,7 +47,6 @@ fe_turn_r  <- rast(here('_output/fe_turnover_maps/all_fe_turnover.tif'))
 
 ## Generate Manuscript Figures
 
-
 ### Map of turnover by component
 
 Break turnover into extirpation and colonization components, plot as 4-panel.
@@ -106,7 +105,7 @@ knitr::include_graphics(fig_file)
 ### Map of turnover by component, SSP5-8.5
 
 ```{r spp and fe turnover components ssp5-8.5}
-fig_file <- here('ms_figs/figSI_spp_fe_turnover_components_ssp585.png')
+fig_file <- here('ms_figs/figS3_spp_fe_turnover_components_ssp585.png')
 
 if(!file.exists(fig_file)) {
   turnover_rasts <- c(spp_turn_r[['rcp85_2050']], fe_turn_r[['rcp85_2050']])

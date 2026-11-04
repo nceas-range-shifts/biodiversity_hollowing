@@ -10,7 +10,7 @@ Most files are excluded from version control via `.gitignore` and must be regene
 | `gebco_2026/` | GEBCO 2026 global bathymetry (0.05°) | `data_mgmt/data_access_bathymetry.qmd` |
 | `isimip_2026/` | ISIMIP3b EcoOcean marine fishery projections | `data_mgmt/data_access_isimip.qmd` |
 | `mregions_2026/` | MEOW (Marine Ecoregions of the World) code raster and lookups; world continents geopackage | `data_mgmt/data_access_eez_meow.qmd` (`world_continents.gpkg` and `meow_lookup_complete.csv` are manual inputs) |
-| `ohara_2024/` | Species vulnerability traits/scores and functional entity traits | `data_mgmt/data_access_funct_entities.qmd` (FE traits only; the vulnerability traits/scores script `data_access_vuln_traits.qmd` has been removed, so those files are no longer regenerable from this repo) |
+| `ohara_2024/` | Species vulnerability traits/scores and functional entity traits | `data_mgmt/data_access_vuln_traits.qmd` (vulnerability traits/scores), `data_mgmt/data_access_funct_entities.qmd` (FE traits) |
 | `unep_wcmc_2026/` | WDPA/WDOECM marine protected area polygons and rasters | none (`data_access_mpas.qmd` has been removed; recover from git history if needed) |
 
 > **Note:** AquaX SDM source data lives outside this repo at `/home/shares/data-aquax/` (read-only shared server).

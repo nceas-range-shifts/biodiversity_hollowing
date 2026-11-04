@@ -15,21 +15,6 @@ get_aquax_meta <- function(meta = 'META_02122025.Rdata', sdm = TRUE) {
   return(meta_clean)
 }
 
-get_spp_traits <- function() {
-  ### run data mgmt scripts first!
-  traits_dir <- here::here('_data/ohara_2024/spp_vuln_framework_traits')
-  junction_df <- data.table::fread(file.path(traits_dir, 'spp_traits_junction.csv'))
-  traitval_df <- data.table::fread(file.path(traits_dir, 'spp_traits_trait_val_lookup.csv'))
-  taxa_df     <- data.table::fread(file.path(traits_dir, 'spp_traits_taxa_lookup.csv'))
-  gapfill_df  <- data.table::fread(file.path(traits_dir, 'spp_traits_gapfill_levels.csv'))
-  df <- junction_df %>%
-    left_join(taxa_df, by = 'aphia_id') %>%
-    left_join(traitval_df, by = 'trait_id') %>%
-    left_join(gapfill_df, by = 'gf_match_id') %>%
-    select(-trait_id, -gf_match_id)
-  return(df)
-}
-
 get_spp_vuln <- function() {
   ### run data mgmt scripts first!
   vuln_dir <- here::here('_data/ohara_2024/spp_vuln_framework_scores')
@@ -154,39 +139,6 @@ xy_to_cell_id <- function(df, x_col = 'x', y_col = 'y', res = 0.05, drop = TRUE)
   return(df)
 }
 
-parquet_to_rast <- function(f, param = NULL, scenario = NULL, behrmann = TRUE) {
-  df <- read_parquet(f)
-  if('stat' %in% names(df)) {
-    if(is.null(param)) param = 'mean'
-    df <- df |> 
-      fsubset(stat == param) |> 
-      select(-stat)
-  }
-  if(is.null(scenario)) {
-    scenario <- names(df)[!names(df) %in% c('cell_id')]
-  }
-  r <- df |>
-    cell_id_to_xy() |>
-    select(x, y, all_of(scenario)) |>
-    rast() |>
-    extend(ext(-180, 180, -90, 90))
-  crs(r) <- 'epsg:4326'
-  if(behrmann) {
-    ocean_r <- get_ocean_rast()
-    r <- project(r, ocean_r)
-  }
-  return(r)
-}
-
-get_ocean_rast <- function() {
-  ### use nspp tif file and flatten to ocean cells - note, all layers
-  ### have zero instead of NA for ocean cells with no spp
-  r <- rast(here::here('_output/spp_turnover_maps/all_spp_richness.tif'))[[1]]
-  r[!is.na(r)] <- 1
-  names(r) <- 'ocean'
-  return(r)
-}
-
 sample_decomp <- function(df) {
   ### MAJOR REWRITE - full vectorization and use of
   ### collapse::fsum etc within group objects - drop the skew and kurtosis
@@ -239,7 +191,7 @@ plot_map <- function(data, fill_var, lat_color = 'grey30') {
 map_theme <- function(lat_color = 'grey30') {
   if(!exists('land_sf')) {
     land_sf <- sf::read_sf(here('_data/mregions_2026/world_continents.gpkg')) |> 
-      st_transform(crs = crs(get_ocean_rast()))
+      st_transform(crs = '+proj=cea +lat_ts=30 +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs')
     assign('land_sf', land_sf, envir = .GlobalEnv)
   }
   ### add onto a ggplot map, more flexibility in defining the

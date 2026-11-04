@@ -32,7 +32,7 @@ library(collapse)
 library(here)
 library(terra)
 
-source(here('common_fxns.R'))
+source(here('scripts/common_fxns.R'))
 ```
 
 
@@ -187,7 +187,9 @@ For the ensemble model layers, reproject to Behrmann 5k resolution, mask, and ca
 isimip_f <- here('_output/biomass_change_maps/biomass_change_ssp585_2050.tif')
 
 if(!file.exists(isimip_f)) {
-  ocean_r <- get_ocean_rast()
+  ### use species richness raster (Behrmann 5 km) as template and ocean mask;
+  ### land cells are NA
+  ocean_r <- rast(here('_output/spp_turnover_maps/all_spp_richness.tif'))[[1]]
 
   mdl_rast_behr <- project(mdl_rast_filled, ocean_r) |> 
     mask(ocean_r)

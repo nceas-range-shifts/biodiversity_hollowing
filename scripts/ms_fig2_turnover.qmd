@@ -30,12 +30,12 @@ library(sf)
 library(collapse)
 library(cowplot)
 
-source(here('common_fxns.R'))
+source(here('scripts/common_fxns.R'))
 ```
 
 ### Read in and rasterize turnover metrics
 
-THese rasters were created in scripts 3 (spp turnover) and 4 (fe turnover) in the Behrmann projection.
+These rasters were created in scripts 1 (spp turnover) and 2 (fe turnover) in the Behrmann projection.
 
 ```{r read rasts}
 
@@ -54,7 +54,7 @@ Break turnover into extirpation and colonization components, plot as 4-panel.
 ```{r spp and fe turnover components}
 fig_file <- here('ms_figs/fig2_spp_fe_turnover_components.png')
 
-if(!file.exists(fig_file)) {
+# if(!file.exists(fig_file)) {
   turnover_rasts <- c(spp_turn_r[['rcp45_2050']], fe_turn_r[['rcp45_2050']])
 
   spp_turn_ext_r <- rast(here('_output/spp_turnover_maps/all_spp_turnover_extirp.tif'))
@@ -97,8 +97,8 @@ if(!file.exists(fig_file)) {
     draw_label('D', x = 0.46, y = 0.47, hjust = 0, vjust = 1, 
                fontface = 'bold', fontfamily = 'Helvetica', size = 12)
 
-  ggsave(fig_file, height = 6.6, width = 17, units = 'cm', dpi = 300)
-}
+  ggsave(fig_file, plot = p_out, height = 6.6, width = 17, units = 'cm', dpi = 300)
+# }
 knitr::include_graphics(fs::path_rel(fig_file))
 ```
 
@@ -107,7 +107,7 @@ knitr::include_graphics(fs::path_rel(fig_file))
 ```{r spp and fe turnover components ssp5-8.5}
 fig_file <- here('ms_figs/figS3_spp_fe_turnover_components_ssp585.png')
 
-if(!file.exists(fig_file)) {
+# if(!file.exists(fig_file)) {
   turnover_rasts <- c(spp_turn_r[['rcp85_2050']], fe_turn_r[['rcp85_2050']])
 
   spp_turn_ext_r <- rast(here('_output/spp_turnover_maps/all_spp_turnover_extirp.tif'))
@@ -150,8 +150,8 @@ if(!file.exists(fig_file)) {
     draw_label('D', x = 0.46, y = 0.47, hjust = 0, vjust = 1, 
                fontface = 'bold', fontfamily = 'Helvetica', size = 12)
 
-  ggsave(fig_file, height = 6.6, width = 17, units = 'cm', dpi = 300)
-}
+  ggsave(fig_file, plot = p_out, height = 6.6, width = 17, units = 'cm', dpi = 300)
+# }
 knitr::include_graphics(fs::path_rel(fig_file))
 ```
 

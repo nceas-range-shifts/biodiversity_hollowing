@@ -42,7 +42,7 @@ library(collapse)
 library(terra)
 library(cowplot)
 
-source(here('common_fxns.R'))
+source(here('scripts/common_fxns.R'))
 ```
 
 ### Gather species, taxa, and vulnerability scores
@@ -176,7 +176,7 @@ for(tx in tx_vec) {
   ### assemble slices for taxon turnover ###
   ##########################################
 
-  tmp_fs <- list.files(dirname(tmp_out_fstem), pattern = tx, full.names = TRUE)
+  tmp_fs <- list.files(dirname(tmp_out_fstem), pattern = paste0('^tx_turnover_', tx, '_[0-9]+_[0-9]+\\.parquet$'), full.names = TRUE)
 
   complete_tx_turnover_df <- lapply(
     X = tmp_fs,
@@ -329,4 +329,6 @@ if(!file.exists(spp_rich_out_f)) {
 r <- rast(spp_rich_out_f)
 plot(r, main = paste('spp richness', names(r)))
 ```
+
+:::
 

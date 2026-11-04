@@ -1,13 +1,19 @@
 # `_data/ohara_2024/` — Species Vulnerability Traits and Functional Entity Traits
 
 ## Scripts
+- `data_mgmt/data_access_vuln_traits.qmd` — downloads vulnerability framework traits and scores from KNB (skips folders that already exist)
 - `data_mgmt/data_access_funct_entities.qmd` — assembles functional entity trait table
 
 ## Contents
+- `spp_vuln_framework_scores/` — aggregated vulnerability scores per species and stressor (read by `get_spp_vuln()`; required by `scripts/1_map_community_change.qmd`)
+- `spp_vuln_framework_traits/` — per-species vulnerability trait values; not currently on disk (the script downloads it if missing)
 - `funct_entity_traits/` — combined trait table used to assign species to functional entities:
   - `fe_spp_traits.csv` — length, trophic level, mobility, water column position, age at maturity, fecundity per species (with AphiaID)
 
 ## Source / URL
+
+Vulnerability traits and scores hosted at KNB:
+https://knb.ecoinformatics.org/view/doi:10.5063/F1QC0211
 
 Functional entity traits sourced from GitHub:
 https://github.com/mapping-marine-spp-vuln/spp_vuln_mapping/tree/main/_data/traits_grouping

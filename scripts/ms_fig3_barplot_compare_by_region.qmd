@@ -20,7 +20,7 @@ library(tidyverse)
 library(collapse)
 library(cowplot)
 library(here)
-source(here('common_fxns.R'))
+source(here('scripts/common_fxns.R'))
 ```
 
 # Summary

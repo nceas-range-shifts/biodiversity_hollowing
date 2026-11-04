@@ -45,7 +45,7 @@ library(collapse)
 library(terra)
 library(cowplot)
 
-source(here('common_fxns.R'))
+source(here('scripts/common_fxns.R'))
 ```
 
 ### Gather species, traits
@@ -209,7 +209,7 @@ for(f_e in fe_vec) {
   ### assemble slices for FE level turnover ###
   #############################################
 
-  tmp_fs <- list.files(dirname(tmp_out_fstem), pattern = f_e, full.names = TRUE)
+  tmp_fs <- list.files(dirname(tmp_out_fstem), pattern = paste0('^fe_turnover_', f_e, '_[0-9]+_[0-9]+\\.parquet$'), full.names = TRUE)
   
   complete_fe_turnover_df <- lapply(
     X = tmp_fs,
@@ -433,4 +433,6 @@ if(!file.exists(fe_rich_out_f)) {
 plot(rast(fe_rich_out_f), main = 'spp richness (fe spp only)')
 
 ```
+
+:::
 

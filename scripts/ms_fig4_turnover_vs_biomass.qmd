@@ -42,13 +42,13 @@ library(collapse)
 library(biscale)  ### for bivariate legend
 library(cowplot)
 
-source(here('common_fxns.R'))
+source(here('scripts/common_fxns.R'))
 ```
 
 
 ### Load biomass projections
 
-Biomass change ensemble model generated in scripts `map_biomass_change.qmd`.  These are already in raster format and Behrmann projection at 5 km resolution.  
+Biomass change ensemble model generated in `3_map_biomass_change.qmd`.  These are already in raster format and Behrmann projection at 5 km resolution.  
 
 Note, the "agreement" layer ranges from -6 to 6, representing the sum of signs of the ensemble model outputs.
 
@@ -71,7 +71,7 @@ lo_conf_sf <- as.polygons(lo_conf_r, aggregate = TRUE, values = FALSE) |>
 
 ### Read in and rasterize turnover metrics
 
-These rasters were created in scripts 3 (spp turnover) and 4 (fe turnover) in the Behrmann projection.
+These rasters were created in scripts 1 (spp turnover) and 2 (fe turnover) in the Behrmann projection.
 
 ```{r read rasts}
 
@@ -333,6 +333,6 @@ fig <- ggdraw() +
              fontfamily = 'Helvetica', fontface = 'bold')
  
 fig_file <- here('ms_figs/fig4_spp_fe_turnover_vs_biomass.png')
-ggsave(fig_file, height = 16, width = 17, units = 'cm', dpi = 300)
+ggsave(fig_file, plot = fig, height = 16, width = 17, units = 'cm', dpi = 300)
 knitr::include_graphics(fs::path_rel(fig_file))
 ```

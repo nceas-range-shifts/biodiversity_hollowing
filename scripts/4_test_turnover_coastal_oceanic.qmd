@@ -40,7 +40,7 @@ library(cowplot)
 
 ### Read in and rasterize turnover metrics
 
-THese rasters were created in scripts 3 (spp turnover) and 4 (fe turnover) in the Behrmann projection.
+These rasters were created in scripts 1 (spp turnover) and 2 (fe turnover) in the Behrmann projection.
 
 ```{r read rasts}
 

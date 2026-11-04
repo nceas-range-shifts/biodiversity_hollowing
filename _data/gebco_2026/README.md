@@ -5,7 +5,7 @@
 
 ## Contents
 - `GEBCO_2026_sub_ice_0.05.nc` — GEBCO 2026 sub-ice topo/bathymetry aggregated to 0.05° resolution
-- `GEBCO_Grid_documentation.pdf` — GEBCO documentation
+- `GEBCO_Grid_docmentation.pdf` — GEBCO documentation (filename as distributed, sic)
 - `GEBCO_Grid_terms_of_use.pdf` — GEBCO terms of use
 
 Original 15-arcsecond (~0.00417°) NetCDF was downloaded and aggregated (factor 12) to 0.05° to match the project grid.

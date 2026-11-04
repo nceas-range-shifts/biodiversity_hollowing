@@ -128,7 +128,7 @@ if(!file.exists(fig1_f)) {
 
   ggsave(fig1_f, height = 12, width = 17, units = 'cm', dpi = 300)
 }
-knitr::include_graphics(fig1_f)
+knitr::include_graphics(fs::path_rel(fig1_f))
 ```
 
 ### Supplementary figs: species and functional richness
@@ -179,7 +179,7 @@ if(!file.exists(figSI_f)) {
 
   ggsave(figSI_f, height = 8, width = 12, units = 'cm', dpi = 300)
 }
-knitr::include_graphics(figSI_f)
+knitr::include_graphics(fs::path_rel(figSI_f))
 ```
 
 ### Supplementary figs: functional redundancy
@@ -245,7 +245,7 @@ if(!file.exists(figSI_f)) {
 
   ggsave(figSI_f, height = 8.5, width = 12, units = 'cm', dpi = 300)
 }
-knitr::include_graphics(figSI_f)
+knitr::include_graphics(fs::path_rel(figSI_f))
 ```
 
 ### Supplementary figs: ssp5-8.5 change
@@ -329,5 +329,5 @@ if(!file.exists(figSI_f)) {
 
   ggsave(figSI_f, height = 12, width = 17, units = 'cm', dpi = 300)
 }
-knitr::include_graphics(figSI_f)
+knitr::include_graphics(fs::path_rel(figSI_f))
 ```

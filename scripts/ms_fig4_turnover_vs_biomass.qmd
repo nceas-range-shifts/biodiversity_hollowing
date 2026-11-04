@@ -334,5 +334,5 @@ fig <- ggdraw() +
  
 fig_file <- here('ms_figs/fig4_spp_fe_turnover_vs_biomass.png')
 ggsave(fig_file, height = 16, width = 17, units = 'cm', dpi = 300)
-knitr::include_graphics(fig_file)
+knitr::include_graphics(fs::path_rel(fig_file))
 ```

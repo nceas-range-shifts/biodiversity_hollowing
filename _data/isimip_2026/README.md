@@ -1,7 +1,7 @@
 # `_data/isimip_2026/` — ISIMIP3b Marine Fishery Projections
 
 ## Script
-`data_mgmt/data_access_fisheries.qmd`
+`data_mgmt/data_access_isimip.qmd`
 
 ## Contents
 - `filelist.txt` — list of source URLs for all downloaded NetCDF files

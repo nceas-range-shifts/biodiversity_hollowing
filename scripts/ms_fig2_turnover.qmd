@@ -99,7 +99,7 @@ if(!file.exists(fig_file)) {
 
   ggsave(fig_file, height = 6.6, width = 17, units = 'cm', dpi = 300)
 }
-knitr::include_graphics(fig_file)
+knitr::include_graphics(fs::path_rel(fig_file))
 ```
 
 ### Map of turnover by component, SSP5-8.5
@@ -152,6 +152,6 @@ if(!file.exists(fig_file)) {
 
   ggsave(fig_file, height = 6.6, width = 17, units = 'cm', dpi = 300)
 }
-knitr::include_graphics(fig_file)
+knitr::include_graphics(fs::path_rel(fig_file))
 ```
 

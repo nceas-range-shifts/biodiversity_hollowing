@@ -15,8 +15,6 @@ Compare species and functional turnover to see if different between coast and oc
 * Species and functional richness, current and projected change
 * Bathymetry to determine coastal vs shallow
 
-
-
 ## Data
 
 * GEBCO gridded elevation - GEBCO_2026 Grid (sub-ice topo/bathy): https://www.gebco.net/data-products/gridded-bathymetry-data#global
@@ -32,10 +30,7 @@ Load turnover maps, partition out by neritic/coastal (<= 200m) and oceanic (>200
 library(tidyverse)
 library(here)
 library(terra)
-library(sf)
-library(arrow)
 library(collapse)
-library(cowplot)
 ```
 
 ### Read in and rasterize turnover metrics
@@ -60,7 +55,64 @@ bathy_r_4326[bathy_r_4326 < -200]  <- 2 ### 2 is oceanic
 
 bathy_r <- project(bathy_r_4326, spp_turn_r[[1]]) |> 
   round() |> ### 
-  mask(spp_turn_r[[1]])
+  mask(spp_turn_r[[1]]) |> 
+  setNames('depth')
+```
+
+### Compare oceanic and coastal change in richness
+
+This compares species richness in 2050 vs current - overall change and coastal vs oceanic change
+
+```{r}
+dnspp_df <- c(nspp_r, bathy_r) |> 
+  as.data.frame(xy = TRUE)
+
+dnspp_stats_df <- dnspp_df |> 
+  fsummarize(mean_current = fmean(spp_r_current),
+             sd_current   = fsd(spp_r_current),
+             mean_rcp45   = fmean(rcp45_2050),
+             sd_rcp45     = fsd(rcp45_2050),
+             mean_rcp85   = fmean(rcp85_2050),
+             sd_rcp85     = fsd(rcp85_2050)) |> 
+  mutate(diff = (mean_rcp45 - mean_current) / mean_current)
+dnspp_stats_df
+
+dnspp_depth_stats_df <- dnspp_df |> 
+  fgroup_by(depth) |> 
+  fsummarize(mean_current = fmean(spp_r_current),
+             sd_current   = fsd(spp_r_current),
+             mean_rcp45   = fmean(rcp45_2050),
+             sd_rcp45     = fsd(rcp45_2050),
+             mean_rcp85   = fmean(rcp85_2050),
+             sd_rcp85     = fsd(rcp85_2050)) |> 
+  mutate(diff = (mean_rcp45 - mean_current) / mean_current)
+dnspp_depth_stats_df
+```
+
+```{r}
+dnfe_df <- c(nfe_r, bathy_r) |> 
+  as.data.frame(xy = TRUE)
+
+dnfe_stats_df <- dnfe_df |> 
+  fsummarize(mean_current = fmean(fe_r_current),
+             sd_current   = fsd(fe_r_current),
+             mean_rcp45   = fmean(rcp45_2050),
+             sd_rcp45     = fsd(rcp45_2050),
+             mean_rcp85   = fmean(rcp85_2050),
+             sd_rcp85     = fsd(rcp85_2050)) |> 
+  mutate(diff = (mean_rcp45 - mean_current) / mean_current)
+dnfe_stats_df
+
+dnfe_depth_stats_df <- dnfe_df |> 
+  fgroup_by(depth) |> 
+  fsummarize(mean_current = fmean(fe_r_current),
+             sd_current   = fsd(fe_r_current),
+             mean_rcp45   = fmean(rcp45_2050),
+             sd_rcp45     = fsd(rcp45_2050),
+             mean_rcp85   = fmean(rcp85_2050),
+             sd_rcp85     = fsd(rcp85_2050)) |> 
+  mutate(diff = (mean_rcp45 - mean_current) / mean_current)
+dnfe_depth_stats_df
 ```
 
 ### Compare oceanic and coastal turnover (full ocean)
@@ -84,8 +136,8 @@ long_df <- combined_df |>
 
 stats_df <- long_df |> 
   group_by(variable, depth) |> 
-  summarize(mean = mean(turnover, na.rm = TRUE),
-            sd = sd(turnover, na.rm = TRUE))
+  summarize(mean_turn = mean(turnover, na.rm = TRUE),
+            sd_turn   = sd(turnover, na.rm = TRUE))
 
 summary_df <- long_df |> 
   group_by(variable) |> 
@@ -94,7 +146,8 @@ summary_df <- long_df |>
     .groups = "drop"
   ) |> 
   mutate(tidy_result = map(test, broom::tidy)) %>%
-  unnest(tidy_result)
+  unnest(tidy_result) |> 
+  rename(diff = estimate, coastal = estimate1, oceanic = estimate2)
 
 stats_df
 
@@ -125,12 +178,12 @@ meow_long_df <- meow_combined_df |>
 
 meow_stats1_df <- meow_long_df |> 
   group_by(variable, depth, realm) |> 
-  summarize(mean = mean(turnover, na.rm = TRUE),
-            sd = sd(turnover, na.rm = TRUE))
+  summarize(mean_turn = mean(turnover, na.rm = TRUE),
+            sd_turn   = sd(turnover, na.rm = TRUE))
 meow_stats2_df <- meow_long_df |> 
   group_by(variable, depth, province) |> 
-  summarize(mean = mean(turnover, na.rm = TRUE),
-            sd = sd(turnover, na.rm = TRUE))
+  summarize(mean_turn = mean(turnover, na.rm = TRUE),
+            sd_turn   = sd(turnover, na.rm = TRUE))
 
 meow_summary1_df <- meow_long_df |> 
   group_by(variable, realm) |> 
@@ -139,7 +192,9 @@ meow_summary1_df <- meow_long_df |>
     .groups = "drop"
   ) |> 
   mutate(tidy_result = map(test, broom::tidy)) %>%
-  unnest(tidy_result)
+  unnest(tidy_result) |> 
+  rename(diff = estimate, coastal = estimate1, oceanic = estimate2)
+
 meow_summary2_df <- meow_long_df |> 
   group_by(variable, province) |> 
   summarise(
@@ -147,7 +202,8 @@ meow_summary2_df <- meow_long_df |>
     .groups = "drop"
   ) |> 
   mutate(tidy_result = map(test, broom::tidy)) %>%
-  unnest(tidy_result)
+  unnest(tidy_result) |> 
+  rename(diff = estimate, coastal = estimate1, oceanic = estimate2)
 
 meow_stats1_df
 meow_stats2_df

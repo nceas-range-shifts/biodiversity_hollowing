@@ -186,7 +186,7 @@ For the ensemble model layers, reproject to Behrmann 5k resolution, mask, and ca
 ```{r}
 isimip_f <- here('_output/biomass_change_maps/biomass_change_ssp585_2050.tif')
 
-if(!file.exists(isimip_f)) {
+# if(!file.exists(isimip_f)) {
   ### use species richness raster (Behrmann 5 km) as template and ocean mask;
   ### land cells are NA
   ocean_r <- rast(here('_output/spp_turnover_maps/all_spp_richness.tif'))[[1]]
@@ -204,6 +204,6 @@ if(!file.exists(isimip_f)) {
   isimip_r <- c(mean_r, sd_r, agr_r) |> 
     setNames(c('mean_ssp585_2050', 'sd_ssp585_2050', 'agreement_ssp585_2050'))
 
-  writeRaster(isimip_r, isimip_f)
-}
+  writeRaster(isimip_r, isimip_f, overwrite = TRUE)
+# }
 ```

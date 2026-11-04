@@ -46,11 +46,11 @@ Rasterize marine ecoregions by code.  Projecting the shapefile introduces proble
 
 ```{r}
 meow_f <- here('_data/mregions_2026/meow_eco_code.tif')
-if(!file.exists(meow_f)) {
+# if(!file.exists(meow_f)) {
   meow_r <- rasterize(meow_sf, base_rast, field = 'eco_code') |> 
     project(behr_rast, method = 'near')
-  writeRaster(meow_r, meow_f)
-}
+  writeRaster(meow_r, meow_f, overwrite = TRUE)
+# }
 ```
 
 The attribute table available via mregions2 is not complete.  Download directly from:

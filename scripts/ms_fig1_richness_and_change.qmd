@@ -185,7 +185,7 @@ knitr::include_graphics(fs::path_rel(figSI_f))
 ### Supplementary figs: functional redundancy
 
 ```{r functional redundancy}
-figSI_f <- here('ms_figs/figS5_functional_redundancy.png')
+figSI_f <- here('ms_figs/figS6_functional_redundancy.png')
 
 if(!file.exists(figSI_f)) {
   fred_r <- nspp_fe_r / nfe_r

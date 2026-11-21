@@ -54,7 +54,7 @@ Break turnover into extirpation and colonization components, plot as 4-panel.
 ```{r spp and fe turnover components}
 fig_file <- here('ms_figs/fig2_spp_fe_turnover_components.png')
 
-# if(!file.exists(fig_file)) {
+if(!file.exists(fig_file)) {
   turnover_rasts <- c(spp_turn_r[['rcp45_2050']], fe_turn_r[['rcp45_2050']])
 
   spp_turn_ext_r <- rast(here('_output/spp_turnover_maps/all_spp_turnover_extirp.tif'))
@@ -98,7 +98,7 @@ fig_file <- here('ms_figs/fig2_spp_fe_turnover_components.png')
                fontface = 'bold', fontfamily = 'Helvetica', size = 12)
 
   ggsave(fig_file, plot = p_out, height = 6.6, width = 17, units = 'cm', dpi = 300)
-# }
+}
 knitr::include_graphics(fs::path_rel(fig_file))
 ```
 
@@ -107,7 +107,7 @@ knitr::include_graphics(fs::path_rel(fig_file))
 ```{r spp and fe turnover components ssp5-8.5}
 fig_file <- here('ms_figs/figS3_spp_fe_turnover_components_ssp585.png')
 
-# if(!file.exists(fig_file)) {
+if(!file.exists(fig_file)) {
   turnover_rasts <- c(spp_turn_r[['rcp85_2050']], fe_turn_r[['rcp85_2050']])
 
   spp_turn_ext_r <- rast(here('_output/spp_turnover_maps/all_spp_turnover_extirp.tif'))
@@ -151,6 +151,121 @@ fig_file <- here('ms_figs/figS3_spp_fe_turnover_components_ssp585.png')
                fontface = 'bold', fontfamily = 'Helvetica', size = 12)
 
   ggsave(fig_file, plot = p_out, height = 6.6, width = 17, units = 'cm', dpi = 300)
+}
+knitr::include_graphics(fs::path_rel(fig_file))
+```
+
+### Map of absolute extirp/colonization
+
+```{r absolute extirp and colonization}
+fig_file <- here('ms_figs/figS4_spp_fe_turnover_components_absolute.png')
+
+# if(!file.exists(fig_file)) {
+
+  stat_to_rast <- function(df, s) {
+    r <- df |> 
+      fsubset(stat == s) |> 
+      cell_id_to_xy() |> 
+      rast(crs = 'epsg:4326') |> 
+      project(spp_turn_r)
+    return(r)
+  }
+  spp_turnover <- arrow::read_parquet(here('_output/spp_turnover_maps', 
+                                          'all_spp_community_change.parquet'))        
+  spp_extirp_r <- spp_turnover |> 
+    stat_to_rast('extirpation')
+  spp_colon_r  <- spp_turnover |> 
+    stat_to_rast('colonization')
+
+  fe_turnover  <- arrow::read_parquet(here('_output/fe_turnover_maps', 
+                                          'all_fe_community_change.parquet'))
+  fe_extirp_r <- fe_turnover |> 
+    stat_to_rast('extirpation')
+  fe_colon_r  <- fe_turnover |> 
+    stat_to_rast('colonization')
+
+  ### set up pipeline to turn individual maps into a grid
+  turnover_rasts <- c(
+      spp_extirp_r[['rcp45_2050']], spp_colon_r[['rcp45_2050']],  
+      fe_extirp_r[['rcp45_2050']],  fe_colon_r[['rcp45_2050']], 
+      spp_extirp_r[['rcp85_2050']], spp_colon_r[['rcp85_2050']],  
+      fe_extirp_r[['rcp85_2050']],  fe_colon_r[['rcp85_2050']]) |> 
+    setNames(rep('var', 8))
+  
+  fill_names <- c('$\\Delta \\, N_{Spp}$', '$\\Delta \\, N_{Spp}$',
+                  '$\\Delta \\, N_{FE}$',  '$\\Delta \\, N_{FE}$',
+                  '$\\Delta \\, N_{Spp}$', '$\\Delta \\, N_{Spp}$',
+                  '$\\Delta \\, N_{FE}$',  '$\\Delta \\, N_{FE}$')
+
+  rast_to_plot <- function(i) {
+    r <- turnover_rasts[[i]]
+    x <- as.data.frame(r, xy = TRUE)
+    fill_name <- fill_names[i]
+    p <- plot_map(data = x, fill_var = var, lat_color = 'grey70') +
+      scale_fill_viridis_c() +
+      theme(text = element_text(family = 'Helvetica'),
+            legend.title = element_text(size = 8),
+            legend.text = element_text(size = 6),
+            ### shrink colorbar and tighten legend spacing
+            legend.key.size = unit(0.3, 'cm'),
+            legend.key.height = unit(0.4, 'cm'),
+            legend.margin = margin(0, 0, 0, 0),
+            legend.box.spacing = unit(2, 'pt'),
+            axis.text = element_blank(), 
+            axis.title = element_blank()) +
+      labs(fill = latex2exp::TeX(fill_name))
+  }
+
+  p_list <- lapply(1:8, rast_to_plot)
+
+  ### Layout in fractions of the full canvas: strips on the left (row labels)
+  ### and top (column titles); each cell = panel + legend, with a thin strip
+  ### above each panel
+  left_w   <- 0.04
+  top_h    <- 0.01
+  col_w    <- (1 - left_w) / 2
+  row_h    <- (1 - top_h) / 4
+  panel_w  <- 0.40
+  legend_w <- col_w - panel_w
+  letter_h <- 0.03
+  panel_h  <- row_h - letter_h
+
+  ### Panels (legend removed so all panels share identical dimensions) and
+  ### legends (extracted separately) are placed on the canvas by hand
+  p_out <- ggdraw()
+  for(i in 1:8) {
+    row_i  <- (i - 1) %/% 2
+    col_i  <- (i - 1) %% 2
+    x0     <- left_w + col_i * col_w
+    y0     <- 1 - top_h - (row_i + 1) * row_h  # bottom of cell
+
+    panel  <- p_list[[i]] + theme(legend.position = 'none')
+    legend <- cowplot::get_legend(p_list[[i]])
+
+    p_out <- p_out +
+      draw_plot(panel,  x = x0, y = y0, width = panel_w, height = panel_h) +
+      draw_plot(legend, x = x0 + panel_w, y = y0, width = legend_w, height = panel_h) +
+      draw_label(LETTERS[i], x = x0 -.001, y = y0 + panel_h,
+                 hjust = 1, vjust = 1, fontfamily = 'Helvetica',
+                 fontface = 'bold', size = 10)
+  }
+
+  ### Row labels (left) and column titles (top)
+  row_labs <- c('Spp', 'FE', 'Spp', 'FE')
+  for(r in 1:4) {
+    p_out <- p_out +
+      draw_label(row_labs[r], x = left_w / 2,
+                 y = 1 - top_h - (r - 1) * row_h - letter_h - panel_h / 2,
+                 angle = 90, hjust = 0.5, vjust = 0.5,
+                 fontfamily = 'Helvetica', size = 8)
+  }
+  p_out <- p_out +
+    draw_label('Extirpation',  x = left_w + panel_w / 2, y = 1 - top_h / 2,
+               hjust = 0.5, vjust = 1, fontfamily = 'Helvetica', size = 8) +
+    draw_label('Colonization', x = left_w + col_w + panel_w / 2, y = 1 - top_h / 2,
+               hjust = 0.5, vjust = 1, fontfamily = 'Helvetica', size = 8)
+ 
+  ggsave(fig_file, plot = p_out, height = 13, width = 17, units = 'cm', dpi = 300)
 # }
 knitr::include_graphics(fs::path_rel(fig_file))
 ```
